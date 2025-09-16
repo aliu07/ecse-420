@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
 
 public class MatrixMultiplication {
 
-    private static final int NUMBER_THREADS = 5;
+    private static final int NUMBER_THREADS = 2;
     private static final int MATRIX_SIZE = 2000;
 
     /**
@@ -17,9 +17,7 @@ public class MatrixMultiplication {
      * @param b is the second matrix
      * @return the result of the multiplication
      */
-    public static double[][] sequentialMultiplyMatrix(
-            double[][] a,
-            double[][] b) {
+    public static double[][] sequentialMultiplyMatrix(double[][] a, double[][] b) {
         Integer rows = a.length;
         Integer common = a[0].length;
         Integer cols = b[0].length;
@@ -50,20 +48,18 @@ public class MatrixMultiplication {
      * @param b is the second matrix
      * @return the result of the multiplication
      */
-    public static double[][] parallelMultiplyMatrix(
-            double[][] a,
-            double[][] b) {
+    public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
         Integer rows = a.length;
-        Integer common = a[0].length;
         Integer cols = b[0].length;
 
         double[][] bTranspose = computeTranspose(b);
         double[][] res = new double[rows][cols];
+
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS);
         Future<?>[] futures = new Future<?>[rows];
 
         for (int r = 0; r < rows; r++) {
-            futures[r] = executor.submit(new MultiplyMatrixTask(r, rows, common, cols, a, bTranspose, res));
+            futures[r] = executor.submit(new MultiplyMatrixTask(r, a, bTranspose, res));
         }
 
         for (Future<?> f : futures) {
@@ -126,62 +122,45 @@ public class MatrixMultiplication {
 
         // --- Sequential ---
         long startSeq = System.nanoTime();
-        double[][] resSeq = sequentialMultiplyMatrix(a, b);
+        sequentialMultiplyMatrix(a, b);
         long endSeq = System.nanoTime();
         double elapsedSeqMs = (endSeq - startSeq) / 1_000_000.0;
         System.out.printf("Sequential multiply took %.3f ms%n", elapsedSeqMs);
 
         // --- Parallel ---
         long startPar = System.nanoTime();
-        double[][] resPar = parallelMultiplyMatrix(a, b);
+        parallelMultiplyMatrix(a, b);
         long endPar = System.nanoTime();
         double elapsedParMs = (endPar - startPar) / 1_000_000.0;
         System.out.printf("Parallel multiply took %.3f ms%n", elapsedParMs);
-
-        // Generate two random matrices, same size
-        // double[][] a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-        // double[][] b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-        // sequentialMultiplyMatrix(a, b);
-        // parallelMultiplyMatrix(a, b);
-
-        // double[][] a = generateRandomMatrix(2, 3);
-        // double[][] b = generateRandomMatrix(3, 2);
-        // System.out.println(Arrays.deepToString(a));
-        // System.out.println(Arrays.deepToString(b));
-        // System.out.println(Arrays.deepToString(sequentialMultiplyMatrix(a, b)));
-        // System.out.println(Arrays.deepToString(parallelMultiplyMatrix(a, b)));
     }
 }
 
 class MultiplyMatrixTask implements Runnable {
-    Integer rowNum; // Index of row in matrix A
-    Integer rows;
-    Integer common;
-    Integer cols;
+    Integer rowIx; // Index of row in matrix A
     double[][] a;
     double[][] b;
     double[][] res;
 
-    public MultiplyMatrixTask(int rowNum, Integer rows, Integer common, Integer cols, double[][] a, double[][] b,
-            double[][] res) {
-        this.rowNum = rowNum;
-        this.rows = rows;
-        this.common = common;
-        this.cols = cols;
+    public MultiplyMatrixTask(Integer rowIx, double[][] a, double[][] b, double[][] res) {
+        this.rowIx = rowIx;
         this.a = a;
         this.b = b;
         this.res = res;
     }
 
     public void run() {
+        Integer common = a[0].length;
+        Integer cols = b[0].length;
+
         for (int col = 0; col < cols; col++) {
             double sum = 0.0;
 
             for (int i = 0; i < common; i++) {
-                sum += a[rowNum][i] * b[col][i];
+                sum += a[rowIx][i] * b[col][i];
             }
 
-            res[rowNum][col] = sum;
+            res[rowIx][col] = sum;
         }
     }
 }
