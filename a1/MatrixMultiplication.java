@@ -17,13 +17,13 @@ public class MatrixMultiplication {
      * @param b is the second matrix
      * @return the result of the multiplication
      */
-    public static double[][] sequentialMultiplyMatrix(double[][] a, double[][] b) {
+    public static Double[][] sequentialMultiplyMatrix(Double[][] a, Double[][] b) {
         Integer rows = a.length;
         Integer common = a[0].length;
         Integer cols = b[0].length;
 
-        double[][] bTranspose = computeTranspose(b);
-        double[][] res = new double[rows][cols];
+        Double[][] bTranspose = computeTranspose(b);
+        Double[][] res = new Double[rows][cols];
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
@@ -48,18 +48,18 @@ public class MatrixMultiplication {
      * @param b is the second matrix
      * @return the result of the multiplication
      */
-    public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
+    public static Double[][] parallelMultiplyMatrix(Double[][] a, Double[][] b) {
         Integer rows = a.length;
         Integer cols = b[0].length;
 
-        double[][] bTranspose = computeTranspose(b);
-        double[][] res = new double[rows][cols];
+        Double[][] bTranspose = computeTranspose(b);
+        Double[][] res = new Double[rows][cols];
 
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS);
         Future<?>[] futures = new Future<?>[rows];
 
         for (int r = 0; r < rows; r++) {
-            futures[r] = executor.submit(new MultiplyMatrixTask(r, a, bTranspose, res));
+            futures[r] = executor.submit(new MatrixMultiplicationTask(r, a, bTranspose, res));
         }
 
         for (Future<?> f : futures) {
@@ -82,8 +82,8 @@ public class MatrixMultiplication {
      * @param numCols number of cols
      * @return matrix
      */
-    private static double[][] generateRandomMatrix(int numRows, int numCols) {
-        double matrix[][] = new double[numRows][numCols];
+    private static Double[][] generateRandomMatrix(int numRows, int numCols) {
+        Double[][] matrix = new Double[numRows][numCols];
 
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
@@ -102,10 +102,10 @@ public class MatrixMultiplication {
      * @param inputMatrix is the input matrix whose transpose we want to compute
      * @return the result of the tranpose operation
      */
-    private static double[][] computeTranspose(double[][] inputMatrix) {
+    private static Double[][] computeTranspose(Double[][] inputMatrix) {
         Integer M = inputMatrix.length;
         Integer N = inputMatrix[0].length;
-        double[][] transpose = new double[N][M];
+        Double[][] transpose = new Double[N][M];
 
         for (int r = 0; r < M; r++) {
             for (int c = 0; c < N; c++) {
@@ -121,7 +121,7 @@ public class MatrixMultiplication {
         runBenchmarks();
     }
 
-    private static void assertEqual(double[][] expected, double[][] actual, String testName) {
+    private static void assertEqual(Double[][] expected, Double[][] actual, String testName) {
         boolean passed = true;
         String errorMsg = "";
 
@@ -169,21 +169,21 @@ public class MatrixMultiplication {
 
         // Test 1: Core functionality - Basic 2x2 with mixed positive/negative values
         testCount++;
-        double[][] a1 = { { 1.0, -2.0 }, { 3.0, 4.0 } };
-        double[][] b1 = { { -5.0, 6.0 }, { 7.0, -8.0 } };
-        double[][] expected1 = { { -19.0, 22.0 }, { 13.0, -14.0 } };
+        Double[][] a1 = { { 1.0, -2.0 }, { 3.0, 4.0 } };
+        Double[][] b1 = { { -5.0, 6.0 }, { 7.0, -8.0 } };
+        Double[][] expected1 = { { -19.0, 22.0 }, { 13.0, -14.0 } };
 
-        double[][] seq1 = sequentialMultiplyMatrix(a1, b1);
-        double[][] par1 = parallelMultiplyMatrix(a1, b1);
+        Double[][] seq1 = sequentialMultiplyMatrix(a1, b1);
+        Double[][] par1 = parallelMultiplyMatrix(a1, b1);
         assertEqual(expected1, seq1, "Test " + testCount + "a: Sequential 2x2 with negatives");
         assertEqual(expected1, par1, "Test " + testCount + "b: Parallel 2x2 with negatives");
         assertEqual(seq1, par1, "Test " + testCount + "c: Sequential vs Parallel consistency");
 
         // Test 2: Edge case - Single element (1x1)
         testCount++;
-        double[][] a2 = { { -7.5 } };
-        double[][] b2 = { { 4.2 } };
-        double[][] expected2 = { { -31.5 } };
+        Double[][] a2 = { { -7.5 } };
+        Double[][] b2 = { { 4.2 } };
+        Double[][] expected2 = { { -31.5 } };
 
         assertEqual(expected2, sequentialMultiplyMatrix(a2, b2),
                 "Test " + testCount + "a: Sequential 1x1 with decimals");
@@ -192,50 +192,50 @@ public class MatrixMultiplication {
         // Test 3: Rectangular matrices - Multiple scenarios in one
         testCount++;
         // 1x3 * 3x2 = 1x2
-        double[][] a3 = { { 1.5, -2.0, 0.5 } };
-        double[][] b3 = { { 2.0, -1.0 }, { 0.0, 3.0 }, { 4.0, 2.0 } };
-        double[][] expected3 = { { 5.0, -6.5 } };
+        Double[][] a3 = { { 1.5, -2.0, 0.5 } };
+        Double[][] b3 = { { 2.0, -1.0 }, { 0.0, 3.0 }, { 4.0, 2.0 } };
+        Double[][] expected3 = { { 5.0, -6.5 } };
 
         assertEqual(expected3, sequentialMultiplyMatrix(a3, b3), "Test " + testCount + "a: Sequential 1x3 * 3x2");
         assertEqual(expected3, parallelMultiplyMatrix(a3, b3), "Test " + testCount + "b: Parallel 1x3 * 3x2");
 
         // Test 4: Zero matrix behavior
         testCount++;
-        double[][] a4 = { { 0.0, 0.0 }, { 0.0, 0.0 } };
-        double[][] b4 = { { 5.0, -3.0 }, { 2.0, 1.0 } };
-        double[][] expected4 = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+        Double[][] a4 = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+        Double[][] b4 = { { 5.0, -3.0 }, { 2.0, 1.0 } };
+        Double[][] expected4 = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
         assertEqual(expected4, sequentialMultiplyMatrix(a4, b4), "Test " + testCount + "a: Sequential zero matrix A");
         assertEqual(expected4, parallelMultiplyMatrix(a4, b4), "Test " + testCount + "b: Parallel zero matrix A");
 
         // Zero matrix B
-        double[][] a4b = { { 1.0, 2.0 }, { 3.0, 4.0 } };
-        double[][] b4b = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+        Double[][] a4b = { { 1.0, 2.0 }, { 3.0, 4.0 } };
+        Double[][] b4b = { { 0.0, 0.0 }, { 0.0, 0.0 } };
         assertEqual(expected4, sequentialMultiplyMatrix(a4b, b4b), "Test " + testCount + "c: Sequential zero matrix B");
         assertEqual(expected4, parallelMultiplyMatrix(a4b, b4b), "Test " + testCount + "d: Parallel zero matrix B");
 
         // Test 5: Identity matrix behavior
         testCount++;
-        double[][] a5 = { { 1.0, 0.0 }, { 0.0, 1.0 } }; // Identity matrix
-        double[][] b5 = { { 7.0, -2.0 }, { 3.0, 4.0 } };
-        double[][] expected5 = { { 7.0, -2.0 }, { 3.0, 4.0 } }; // Should equal B
+        Double[][] a5 = { { 1.0, 0.0 }, { 0.0, 1.0 } }; // Identity matrix
+        Double[][] b5 = { { 7.0, -2.0 }, { 3.0, 4.0 } };
+        Double[][] expected5 = { { 7.0, -2.0 }, { 3.0, 4.0 } }; // Should equal B
 
         assertEqual(expected5, sequentialMultiplyMatrix(a5, b5), "Test " + testCount + "a: Sequential identity matrix");
         assertEqual(expected5, parallelMultiplyMatrix(a5, b5), "Test " + testCount + "b: Parallel identity matrix");
 
         // Test 6: Large precision decimals and small numbers
         testCount++;
-        double[][] a6 = { { 0.000001, 1000000.0 } };
-        double[][] b6 = { { 1000000.0 }, { 0.000001 } };
-        double[][] expected6 = { { 2.0 } };
+        Double[][] a6 = { { 0.000001, 1000000.0 } };
+        Double[][] b6 = { { 1000000.0 }, { 0.000001 } };
+        Double[][] expected6 = { { 2.0 } };
 
         assertEqual(expected6, sequentialMultiplyMatrix(a6, b6), "Test " + testCount + "a: Sequential precision test");
         assertEqual(expected6, parallelMultiplyMatrix(a6, b6), "Test " + testCount + "b: Parallel precision test");
 
         // Test 7: Dimension mismatch scenarios
         testCount++;
-        double[][] a7 = { { 1.0, 2.0 } };
-        double[][] b7 = { { 3.0 }, { 4.0 }, { 5.0 } };
+        Double[][] a7 = { { 1.0, 2.0 } };
+        Double[][] b7 = { { 3.0 }, { 4.0 }, { 5.0 } };
 
         assertThrows("Test " + testCount + "a: Sequential dimension mismatch",
                 () -> sequentialMultiplyMatrix(a7, b7));
@@ -245,7 +245,7 @@ public class MatrixMultiplication {
         System.out.println("--- Test Suite Complete: " + testCount + " test groups executed ---\n");
     }
 
-    private static void benchmarkSequential(double[][] a, double[][] b) {
+    private static void benchmarkSequential(Double[][] a, Double[][] b) {
         long startSeq = System.nanoTime();
         sequentialMultiplyMatrix(a, b);
         long endSeq = System.nanoTime();
@@ -253,7 +253,7 @@ public class MatrixMultiplication {
         System.out.printf("Sequential multiply took %.3f ms%n", elapsedSeqMs);
     }
 
-    private static void benchmarkParallel(double[][] a, double[][] b) {
+    private static void benchmarkParallel(Double[][] a, Double[][] b) {
         long startSeq = System.nanoTime();
         parallelMultiplyMatrix(a, b);
         long endSeq = System.nanoTime();
@@ -270,21 +270,21 @@ public class MatrixMultiplication {
             Integer size = sizes[i];
 
             System.out.println(String.format("Benchmark %d: Matrix size = %d", i, size));
-            double[][] a1 = generateRandomMatrix(size, size);
-            double[][] b1 = generateRandomMatrix(size, size);
+            Double[][] a1 = generateRandomMatrix(size, size);
+            Double[][] b1 = generateRandomMatrix(size, size);
             benchmarkSequential(a1, b1);
             benchmarkParallel(a1, b1);
         }
     }
 }
 
-class MultiplyMatrixTask implements Runnable {
+class MatrixMultiplicationTask implements Runnable {
     Integer rowIx; // Index of row in matrix A
-    double[][] a;
-    double[][] b;
-    double[][] res;
+    Double[][] a;
+    Double[][] b;
+    Double[][] res;
 
-    public MultiplyMatrixTask(Integer rowIx, double[][] a, double[][] b, double[][] res) {
+    public MatrixMultiplicationTask(Integer rowIx, Double[][] a, Double[][] b, Double[][] res) {
         this.rowIx = rowIx;
         this.a = a;
         this.b = b;
