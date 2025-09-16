@@ -151,7 +151,7 @@ class MultiplyMatrixTask implements Runnable {
 
     public void run() {
         Integer common = a[0].length;
-        Integer cols = b[0].length;
+        Integer cols = res[0].length;
 
         for (int col = 0; col < cols; col++) {
             double sum = 0.0;
