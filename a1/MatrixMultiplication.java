@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
 
 public class MatrixMultiplication {
 
-    private static final int NUMBER_THREADS = 2;
+    private static final int NUMBER_THREADS = 5;
     private static final int MATRIX_SIZE = 2000;
 
     /**
@@ -243,6 +243,38 @@ public class MatrixMultiplication {
                 () -> parallelMultiplyMatrix(a7, b7));
 
         System.out.println("--- Test Suite Complete: " + testCount + " test groups executed ---\n");
+    }
+
+    private static void benchmarkSequential(double[][] a, double[][] b) {
+        long startSeq = System.nanoTime();
+        sequentialMultiplyMatrix(a, b);
+        long endSeq = System.nanoTime();
+        double elapsedSeqMs = (endSeq - startSeq) / 1_000_000.0;
+        System.out.printf("Sequential multiply took %.3f ms%n", elapsedSeqMs);
+    }
+
+    private static void benchmarkParallel(double[][] a, double[][] b) {
+        long startSeq = System.nanoTime();
+        parallelMultiplyMatrix(a, b);
+        long endSeq = System.nanoTime();
+        double elapsedSeqMs = (endSeq - startSeq) / 1_000_000.0;
+        System.out.printf("Parallel multiply took %.3f ms%n", elapsedSeqMs);
+    }
+
+    private static void runBenchmarks() {
+        System.out.println("\n--- Running Benchmark Suite ---");
+
+        Integer[] sizes = { 100, 200, 500, 1000, 2000, 3000, 4000 };
+
+        for (int i = 0; i < sizes.length; i++) {
+            Integer size = sizes[i];
+
+            System.out.println(String.format("Benchmark %d: Matrix size = %d", i, size));
+            double[][] a1 = generateRandomMatrix(size, size);
+            double[][] b1 = generateRandomMatrix(size, size);
+            benchmarkSequential(a1, b1);
+            benchmarkParallel(a1, b1);
+        }
     }
 }
 
