@@ -105,7 +105,7 @@ public class MatrixMultiplication {
     private static double[][] computeTranspose(double[][] inputMatrix) {
         Integer M = inputMatrix.length;
         Integer N = inputMatrix[0].length;
-        double[][] transpose = new double[M][N];
+        double[][] transpose = new double[N][M];
 
         for (int r = 0; r < M; r++) {
             for (int c = 0; c < N; c++) {
