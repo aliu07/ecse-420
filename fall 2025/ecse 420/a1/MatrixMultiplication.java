@@ -24,15 +24,7 @@ public class MatrixMultiplication {
         Integer common = a[0].length;
         Integer cols = b[0].length;
 
-        // Compute transpose of B to leverage cache locality performance boost
-        double[][] bTranspose = new double[cols][common];
-
-        for (int r = 0; r < common; r++) {
-            for (int c = 0; c < cols; c++) {
-                bTranspose[c][r] = b[r][c];
-            }
-        }
-
+        double[][] bTranspose = computeTranspose(b);
         double[][] res = new double[rows][cols];
 
         for (int r = 0; r < rows; r++) {
@@ -65,15 +57,7 @@ public class MatrixMultiplication {
         Integer common = a[0].length;
         Integer cols = b[0].length;
 
-        // Compute transpose of B to leverage cache locality performance boost
-        double[][] bTranspose = new double[cols][common];
-
-        for (int r = 0; r < common; r++) {
-            for (int c = 0; c < cols; c++) {
-                bTranspose[c][r] = b[r][c];
-            }
-        }
-
+        double[][] bTranspose = computeTranspose(b);
         double[][] res = new double[rows][cols];
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS);
         Future<?>[] futures = new Future<?>[rows];
@@ -112,6 +96,28 @@ public class MatrixMultiplication {
         }
 
         return matrix;
+    }
+
+    /**
+     * Returns the tranpose of a given matrix. This function is used to leverage
+     * cache locality when performing matrix multiplications in order to boost
+     * runtime performance.
+     * 
+     * @param inputMatrix is the input matrix whose transpose we want to compute
+     * @return the result of the tranpose operation
+     */
+    private static double[][] computeTranspose(double[][] inputMatrix) {
+        Integer M = inputMatrix.length;
+        Integer N = inputMatrix[0].length;
+        double[][] transpose = new double[M][N];
+
+        for (int r = 0; r < M; r++) {
+            for (int c = 0; c < N; c++) {
+                transpose[c][r] = inputMatrix[r][c];
+            }
+        }
+
+        return transpose;
     }
 
     public static void main(String[] args) {
