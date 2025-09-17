@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 public class MatrixMultiplication {
 
     private static final int NUMBER_THREADS = 5;
-    private static final int MATRIX_SIZE = 2000;
+    private static final int[] MATRIX_SIZES = { 100, 200, 500, 1000, 2000, 3000, 4000 };
 
     /**
      * Returns the result of a sequential matrix multiplication
@@ -245,35 +245,43 @@ public class MatrixMultiplication {
         System.out.println("--- Test Suite Complete: " + testCount + " test groups executed ---\n");
     }
 
-    private static void benchmarkSequential(Double[][] a, Double[][] b) {
+    private static Double[][] benchmarkSequential(Double[][] a, Double[][] b) {
         long startSeq = System.nanoTime();
-        sequentialMultiplyMatrix(a, b);
+        Double[][] res = sequentialMultiplyMatrix(a, b);
         long endSeq = System.nanoTime();
+
         double elapsedSeqMs = (endSeq - startSeq) / 1_000_000.0;
         System.out.printf("Sequential multiply took %.3f ms%n", elapsedSeqMs);
+
+        return res;
     }
 
-    private static void benchmarkParallel(Double[][] a, Double[][] b) {
+    private static Double[][] benchmarkParallel(Double[][] a, Double[][] b) {
         long startSeq = System.nanoTime();
-        parallelMultiplyMatrix(a, b);
+        Double[][] res = parallelMultiplyMatrix(a, b);
         long endSeq = System.nanoTime();
+
         double elapsedSeqMs = (endSeq - startSeq) / 1_000_000.0;
         System.out.printf("Parallel multiply took %.3f ms%n", elapsedSeqMs);
+
+        return res;
     }
 
     private static void runBenchmarks() {
         System.out.println("\n--- Running Benchmark Suite ---");
 
-        Integer[] sizes = { 100, 200, 500, 1000, 2000, 3000, 4000 };
+        for (int i = 0; i < MATRIX_SIZES.length; i++) {
+            Integer size = MATRIX_SIZES[i];
+            String testName = String.format("Benchmark %d: Matrix size = %d", i, size);
 
-        for (int i = 0; i < sizes.length; i++) {
-            Integer size = sizes[i];
-
-            System.out.println(String.format("Benchmark %d: Matrix size = %d", i, size));
+            System.out.println(testName);
             Double[][] a1 = generateRandomMatrix(size, size);
             Double[][] b1 = generateRandomMatrix(size, size);
-            benchmarkSequential(a1, b1);
-            benchmarkParallel(a1, b1);
+
+            Double[][] seqRes = benchmarkSequential(a1, b1);
+            Double[][] parRes = benchmarkParallel(a1, b1);
+
+            assertEqual(seqRes, parRes, testName);
         }
     }
 }
