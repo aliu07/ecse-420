@@ -479,6 +479,7 @@ public class MatrixMultiplication {
      * Uses a fixed matrix size of 4000x4000 and compares results
      * against sequential implementation for correctness.
      */
+    @SuppressWarnings("unused")
     private static void runBenchmarkByThreads() {
         System.out.println("\n--- Running Benchmark by Threads Suite ---");
 
@@ -509,6 +510,7 @@ public class MatrixMultiplication {
      * Uses the predefined MATRIX_SIZES array and compares results
      * for correctness while measuring execution times.
      */
+    @SuppressWarnings("unused")
     private static void runBenchmarkByMatrixSizes() {
         System.out.println("\n--- Running Benchmark by Matrix Size Suite ---");
 
@@ -539,9 +541,11 @@ public class MatrixMultiplication {
      * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
-        runTests();
+        runTests(); // do not comment, enforce unit tests
+        // Benchmark by num of threads takes a very long time to run, uncomment if you want
         // runBenchmarkByThreads();
-        runBenchmarkByMatrixSizes();
+        // Benchmark by matrix size takes a long time to run, uncomment if you want
+        // runBenchmarkByMatrixSizes();
     }
 }
 
