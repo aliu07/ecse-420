@@ -249,6 +249,14 @@ public class MatrixMultiplication {
         }
     }
 
+    /**
+     * Executes an operation and verifies that it throws an exception.
+     * Prints test results indicating success if an exception is caught,
+     * or failure if no exception is thrown.
+     *
+     * @param testName the name of the test for display purposes
+     * @param operation the operation expected to throw an exception
+     */
     private static void assertThrows(String testName, Runnable operation) {
         try {
             operation.run();
@@ -267,6 +275,12 @@ public class MatrixMultiplication {
         }
     }
 
+    /**
+     * Executes a comprehensive test suite to verify the correctness of both
+     * sequential and parallel matrix multiplication implementations.
+     * Tests include basic functionality, edge cases, zero matrices, identity
+     * matrices, precision tests, and error handling scenarios.
+     */
     private static void runTests() {
         System.out.println("\n--- Running Test Suite ---");
         int testCount = 0;
@@ -416,6 +430,14 @@ public class MatrixMultiplication {
         );
     }
 
+    /**
+     * Performs sequential matrix multiplication and measures execution time.
+     * Prints the elapsed time in milliseconds to the console.
+     *
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the result of the matrix multiplication
+     */
     private static Double[][] benchmarkSequential(Double[][] a, Double[][] b) {
         long startSeq = System.nanoTime();
         Double[][] res = sequentialMultiplyMatrix(a, b);
@@ -427,6 +449,15 @@ public class MatrixMultiplication {
         return res;
     }
 
+    /**
+     * Performs parallel matrix multiplication and measures execution time.
+     * Prints the elapsed time in milliseconds to the console.
+     *
+     * @param a the first matrix
+     * @param b the second matrix
+     * @param numThreads the number of threads to use for parallel execution
+     * @return the result of the matrix multiplication
+     */
     private static Double[][] benchmarkParallel(
         Double[][] a,
         Double[][] b,
@@ -442,6 +473,12 @@ public class MatrixMultiplication {
         return res;
     }
 
+    /**
+     * Runs a benchmark suite that tests parallel matrix multiplication
+     * performance across different thread counts (1-49 threads).
+     * Uses a fixed matrix size of 4000x4000 and compares results
+     * against sequential implementation for correctness.
+     */
     private static void runBenchmarkByThreads() {
         System.out.println("\n--- Running Benchmark by Threads Suite ---");
 
@@ -466,6 +503,12 @@ public class MatrixMultiplication {
         }
     }
 
+    /**
+     * Runs a benchmark suite that tests both sequential and parallel
+     * matrix multiplication performance across different matrix sizes.
+     * Uses the predefined MATRIX_SIZES array and compares results
+     * for correctness while measuring execution times.
+     */
     private static void runBenchmarkByMatrixSizes() {
         System.out.println("\n--- Running Benchmark by Matrix Size Suite ---");
 
@@ -488,6 +531,13 @@ public class MatrixMultiplication {
         }
     }
 
+    /**
+     * Main method that executes the test suite and benchmarks.
+     * Runs correctness tests followed by performance benchmarks
+     * across different matrix sizes.
+     *
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
         runTests();
         // runBenchmarkByThreads();
@@ -495,6 +545,10 @@ public class MatrixMultiplication {
     }
 }
 
+/**
+ * Task class for parallel matrix multiplication that computes one row
+ * of the result matrix. Implements Runnable to be executed by thread pool.
+ */
 class MatrixMultiplicationTask implements Runnable {
 
     Integer rowIx; // Index of row in matrix A
@@ -502,6 +556,14 @@ class MatrixMultiplicationTask implements Runnable {
     Double[][] b;
     Double[][] res;
 
+    /**
+     * Constructs a matrix multiplication task for a specific row.
+     *
+     * @param rowIx the index of the row in matrix A to compute
+     * @param a the first matrix (matrix A)
+     * @param b the second matrix (matrix B, should be transposed)
+     * @param res the result matrix where computed values will be stored
+     */
     public MatrixMultiplicationTask(
         Integer rowIx,
         Double[][] a,
@@ -514,6 +576,11 @@ class MatrixMultiplicationTask implements Runnable {
         this.res = res;
     }
 
+    /**
+     * Computes one row of the matrix multiplication result.
+     * This method is called when the task is executed by a thread.
+     * It calculates all column values for the assigned row index.
+     */
     public void run() {
         Integer common = a[0].length;
         Integer cols = res[0].length;
