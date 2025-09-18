@@ -27,6 +27,8 @@ public class MatrixMultiplication {
         Double[][] a,
         Double[][] b
     ) {
+        validateInputMatrices(a, b);
+
         Integer rows = a.length;
         Integer common = a[0].length;
         Integer cols = b[0].length;
@@ -62,6 +64,8 @@ public class MatrixMultiplication {
         Double[][] b,
         Integer numThreads
     ) {
+        validateInputMatrices(a, b);
+
         Integer rows = a.length;
         Integer cols = b[0].length;
 
@@ -131,6 +135,79 @@ public class MatrixMultiplication {
         return transpose;
     }
 
+    /**
+     * Validates whether two matrices are compatible for matrix multiplication.
+     * For matrices A and B to be multiplied (A * B), the number of columns in A
+     * must equal the number of rows in B.
+     *
+     * @param a the first matrix
+     * @param b the second matrix
+     * @throws IllegalArgumentException if matrices are null or incompatible for multiplication
+     */
+    private static void validateInputMatrices(Double[][] a, Double[][] b) {
+        if (a == null || b == null) {
+            throw new IllegalArgumentException("Input matrices cannot be null");
+        }
+
+        if (a.length == 0 || b.length == 0) {
+            throw new IllegalArgumentException(
+                "Input matrices cannot be empty"
+            );
+        }
+
+        if (a[0] == null || b[0] == null) {
+            throw new IllegalArgumentException("Matrix rows cannot be null");
+        }
+
+        int aColumns = a[0].length;
+        int bRows = b.length;
+
+        if (aColumns != bRows) {
+            throw new IllegalArgumentException(
+                String.format(
+                    "Matrix dimensions incompatible for multiplication: " +
+                        "A has %d columns but B has %d rows",
+                    aColumns,
+                    bRows
+                )
+            );
+        }
+
+        // Validate that all rows in matrix A have the same number of columns
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] == null || a[i].length != aColumns) {
+                throw new IllegalArgumentException(
+                    String.format(
+                        "Matrix A row %d has inconsistent dimensions",
+                        i
+                    )
+                );
+            }
+        }
+
+        // Validate that all rows in matrix B have the same number of columns
+        int bColumns = b[0].length;
+        for (int i = 0; i < b.length; i++) {
+            if (b[i] == null || b[i].length != bColumns) {
+                throw new IllegalArgumentException(
+                    String.format(
+                        "Matrix B row %d has inconsistent dimensions",
+                        i
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * Compares two matrices for equality and prints test results.
+     * Matrices are considered equal if they have the same dimensions and
+     * all corresponding elements are within a tolerance of 0.001.
+     *
+     * @param expected the expected matrix values
+     * @param actual the actual matrix values to compare
+     * @param testName the name of the test for display purposes
+     */
     private static void assertEqual(
         Double[][] expected,
         Double[][] actual,
