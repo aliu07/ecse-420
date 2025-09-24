@@ -1,4 +1,6 @@
-public class DeadlockExample {
+package examples;
+
+public class Deadlock {
 
     private static class DeadlockExampleThread1 extends Thread {
 

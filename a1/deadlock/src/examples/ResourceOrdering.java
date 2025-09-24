@@ -1,4 +1,6 @@
-public class ResourceOrderingExample {
+package examples;
+
+public class ResourceOrdering {
 
     private static class ResourceOrderingExampleThread extends Thread {
 
@@ -11,8 +13,7 @@ public class ResourceOrderingExample {
         public void run() {
             synchronized (lock1) {
                 System.out.println(
-                    String.format("Thread %d holding lock 1...", threadNum)
-                );
+                        String.format("Thread %d holding lock 1...", threadNum));
 
                 try {
                     Thread.sleep(1000);
@@ -21,16 +22,13 @@ public class ResourceOrderingExample {
                 }
 
                 System.out.println(
-                    String.format("Thread %d waiting for lock 2...", threadNum)
-                );
+                        String.format("Thread %d waiting for lock 2...", threadNum));
 
                 synchronized (lock2) {
                     System.out.println(
-                        String.format(
-                            "Thread %d holding locks 1 and 2...",
-                            threadNum
-                        )
-                    );
+                            String.format(
+                                    "Thread %d holding locks 1 and 2...",
+                                    threadNum));
                 }
             }
         }

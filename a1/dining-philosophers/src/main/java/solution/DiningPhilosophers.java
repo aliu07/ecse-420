@@ -1,3 +1,5 @@
+package solution;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
@@ -13,6 +15,7 @@ public class DiningPhilosophers {
     public static class Philosopher implements Runnable {
 
         @Override
-        public void run() {}
+        public void run() {
+        }
     }
 }
