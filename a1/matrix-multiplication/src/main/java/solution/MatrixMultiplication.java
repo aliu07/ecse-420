@@ -320,7 +320,6 @@ public class MatrixMultiplication {
      * Uses the predefined MATRIX_SIZES array and compares results
      * for correctness while measuring execution times.
      */
-    @SuppressWarnings("unused")
     private static void runBenchmarkByMatrixSizes() {
         System.out.println("\n--- Running Benchmark by Matrix Size Suite ---");
 
@@ -353,6 +352,7 @@ public class MatrixMultiplication {
         // Benchmark by num of threads takes a very long time to run, uncomment if you
         // want
         // runBenchmarkByThreads();
+
         // Benchmark by matrix size takes a long time to run, uncomment if you want
         runBenchmarkByMatrixSizes();
     }
