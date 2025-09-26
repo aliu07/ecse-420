@@ -2,7 +2,7 @@ package examples;
 
 public class Deadlock {
 
-    private static class DeadlockExampleThread1 extends Thread {
+    private static class DeadlockThread1 extends Thread {
 
         public void run() {
             synchronized (lock1) {
@@ -23,7 +23,7 @@ public class Deadlock {
         }
     }
 
-    private static class DeadlockExampleThread2 extends Thread {
+    private static class DeadlockThread2 extends Thread {
 
         public void run() {
             synchronized (lock2) {
@@ -48,8 +48,8 @@ public class Deadlock {
     public static Object lock2 = new Object();
 
     public static void main(String[] args) {
-        DeadlockExampleThread1 t1 = new DeadlockExampleThread1();
-        DeadlockExampleThread2 t2 = new DeadlockExampleThread2();
+        DeadlockThread1 t1 = new DeadlockThread1();
+        DeadlockThread2 t2 = new DeadlockThread2();
 
         t1.start();
         t2.start();
