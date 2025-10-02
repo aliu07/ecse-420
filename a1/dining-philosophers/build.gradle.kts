@@ -55,3 +55,8 @@ tasks.named<Test>("test") {
         showStandardStreams = true
     }
 }
+
+tasks.named<JavaExec>("run") {
+    // Allow overriding the main class via -PmainClass=<fully.qualified.ClassName>
+    mainClass.set(project.findProperty("mainClass") as String? ?: application.mainClass.get())
+}
