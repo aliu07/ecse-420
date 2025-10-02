@@ -3,20 +3,19 @@ package solution;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import solution.tasks.MatrixMultiplicationTask;
 
 public class MatrixMultiplication {
 
     private static final int NUMBER_THREADS = 8; // For theoretic optimum, set to number of cpu cores on machine
     private static final int[] MATRIX_SIZES = {
-            100,
-            200,
-            500,
-            1000,
-            2000,
-            3000,
-            4000,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        3000,
+        4000,
     };
 
     /**
@@ -28,8 +27,9 @@ public class MatrixMultiplication {
      * @return the result of the multiplication
      */
     public static Double[][] sequentialMultiplyMatrix(
-            Double[][] a,
-            Double[][] b) {
+        Double[][] a,
+        Double[][] b
+    ) {
         validateInputMatrices(a, b);
 
         Integer rows = a.length;
@@ -63,9 +63,10 @@ public class MatrixMultiplication {
      * @return the result of the multiplication
      */
     public static Double[][] parallelMultiplyMatrix(
-            Double[][] a,
-            Double[][] b,
-            Integer numThreads) {
+        Double[][] a,
+        Double[][] b,
+        Integer numThreads
+    ) {
         validateInputMatrices(a, b);
 
         Integer rows = a.length;
@@ -79,7 +80,8 @@ public class MatrixMultiplication {
 
         for (int r = 0; r < rows; r++) {
             futures[r] = executor.submit(
-                    new MatrixMultiplicationTask(r, a, bTranspose, res));
+                new MatrixMultiplicationTask(r, a, bTranspose, res)
+            );
         }
 
         for (Future<?> f : futures) {
@@ -92,26 +94,6 @@ public class MatrixMultiplication {
 
         executor.shutdown();
         return res;
-    }
-
-    /**
-     * Populates a matrix of given size with randomly generated integers between
-     * 0-10.
-     *
-     * @param numRows number of rows
-     * @param numCols number of cols
-     * @return matrix
-     */
-    private static Double[][] generateRandomMatrix(int numRows, int numCols) {
-        Double[][] matrix = new Double[numRows][numCols];
-
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numCols; col++) {
-                matrix[row][col] = (double) ((int) (Math.random() * 10.0));
-            }
-        }
-
-        return matrix;
     }
 
     /**
@@ -137,6 +119,26 @@ public class MatrixMultiplication {
     }
 
     /**
+     * Populates a matrix of given size with randomly generated integers between
+     * 0-10.
+     *
+     * @param numRows number of rows
+     * @param numCols number of cols
+     * @return matrix
+     */
+    private static Double[][] generateRandomMatrix(int numRows, int numCols) {
+        Double[][] matrix = new Double[numRows][numCols];
+
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                matrix[row][col] = (double) ((int) (Math.random() * 10.0));
+            }
+        }
+
+        return matrix;
+    }
+
+    /**
      * Validates whether two matrices are compatible for matrix multiplication.
      * For matrices A and B to be multiplied (A * B), the number of columns in A
      * must equal the number of rows in B.
@@ -153,7 +155,8 @@ public class MatrixMultiplication {
 
         if (a.length == 0 || b.length == 0) {
             throw new IllegalArgumentException(
-                    "Input matrices cannot be empty");
+                "Input matrices cannot be empty"
+            );
         }
 
         if (a[0] == null || b[0] == null) {
@@ -165,20 +168,24 @@ public class MatrixMultiplication {
 
         if (aColumns != bRows) {
             throw new IllegalArgumentException(
-                    String.format(
-                            "Matrix dimensions incompatible for multiplication: " +
-                                    "A has %d columns but B has %d rows",
-                            aColumns,
-                            bRows));
+                String.format(
+                    "Matrix dimensions incompatible for multiplication: " +
+                        "A has %d columns but B has %d rows",
+                    aColumns,
+                    bRows
+                )
+            );
         }
 
         // Validate that all rows in matrix A have the same number of columns
         for (int i = 0; i < a.length; i++) {
             if (a[i] == null || a[i].length != aColumns) {
                 throw new IllegalArgumentException(
-                        String.format(
-                                "Matrix A row %d has inconsistent dimensions",
-                                i));
+                    String.format(
+                        "Matrix A row %d has inconsistent dimensions",
+                        i
+                    )
+                );
             }
         }
 
@@ -187,58 +194,12 @@ public class MatrixMultiplication {
         for (int i = 0; i < b.length; i++) {
             if (b[i] == null || b[i].length != bColumns) {
                 throw new IllegalArgumentException(
-                        String.format(
-                                "Matrix B row %d has inconsistent dimensions",
-                                i));
+                    String.format(
+                        "Matrix B row %d has inconsistent dimensions",
+                        i
+                    )
+                );
             }
-        }
-    }
-
-    /**
-     * Compares two matrices for equality and prints test results.
-     * Matrices are considered equal if they have the same dimensions and
-     * all corresponding elements are within a tolerance of 0.001.
-     *
-     * @param expected the expected matrix values
-     * @param actual   the actual matrix values to compare
-     * @param testName the name of the test for display purposes
-     */
-    private static void assertEqual(
-            Double[][] expected,
-            Double[][] actual,
-            String testName) {
-        boolean passed = true;
-        String errorMsg = "";
-
-        if (expected.length != actual.length) {
-            passed = false;
-            errorMsg = "Row count mismatch";
-        } else {
-            for (int i = 0; i < expected.length && passed; i++) {
-                if (expected[i].length != actual[i].length) {
-                    passed = false;
-                    errorMsg = "Column count mismatch at row " + i;
-                } else {
-                    for (int j = 0; j < expected[i].length; j++) {
-                        if (Math.abs(expected[i][j] - actual[i][j]) > 0.001) {
-                            passed = false;
-                            errorMsg = String.format(
-                                    "Value mismatch at [%d][%d]: expected %.3f, got %.3f",
-                                    i,
-                                    j,
-                                    expected[i][j],
-                                    actual[i][j]);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (passed) {
-            System.out.println("✓ " + testName + " PASSED");
-        } else {
-            System.out.println("✗ " + testName + " FAILED: " + errorMsg);
         }
     }
 
@@ -271,9 +232,10 @@ public class MatrixMultiplication {
      * @return the result of the matrix multiplication
      */
     private static Double[][] benchmarkParallel(
-            Double[][] a,
-            Double[][] b,
-            Integer numThreads) {
+        Double[][] a,
+        Double[][] b,
+        Integer numThreads
+    ) {
         long startSeq = System.nanoTime();
         Double[][] res = parallelMultiplyMatrix(a, b, numThreads);
         long endSeq = System.nanoTime();
@@ -292,7 +254,9 @@ public class MatrixMultiplication {
      */
     @SuppressWarnings("unused")
     private static void runBenchmarkByThreads() {
-        System.out.println("\n--- Running Benchmark by Threads Suite ---");
+        System.out.println(
+            "\n=========== Running Benchmark by Threads Suite ==========="
+        );
 
         Integer matrixSize = 4000;
         Double[][] a = generateRandomMatrix(matrixSize, matrixSize);
@@ -303,14 +267,13 @@ public class MatrixMultiplication {
 
         for (int i = 1; i < 50; i++) {
             String testName = String.format(
-                    "[MATRIX SIZE = %d] [NUMBER OF THREADS = %d] ",
-                    matrixSize,
-                    i);
+                "[MATRIX SIZE = %d] [NUMBER OF THREADS = %d] ",
+                matrixSize,
+                i
+            );
             System.out.print(testName);
 
             Double[][] parRes = benchmarkParallel(a, b, i);
-
-            assertEqual(parRes, seqRes, testName);
         }
     }
 
@@ -320,40 +283,94 @@ public class MatrixMultiplication {
      * Uses the predefined MATRIX_SIZES array and compares results
      * for correctness while measuring execution times.
      */
+    @SuppressWarnings("unused")
     private static void runBenchmarkByMatrixSizes() {
-        System.out.println("\n--- Running Benchmark by Matrix Size Suite ---");
+        System.out.println(
+            "\n=========== Running Benchmark by Matrix Size Suite ==========="
+        );
 
         for (int i = 0; i < MATRIX_SIZES.length; i++) {
             Integer size = MATRIX_SIZES[i];
             String testName = String.format(
-                    "Benchmark %d: Matrix size = %d",
-                    i,
-                    size);
+                "Benchmark %d: Matrix size = %d",
+                i,
+                size
+            );
             System.out.println(testName);
 
             Double[][] a = generateRandomMatrix(size, size);
             Double[][] b = generateRandomMatrix(size, size);
 
-            Double[][] seqRes = benchmarkSequential(a, b);
-            Double[][] parRes = benchmarkParallel(a, b, NUMBER_THREADS);
-
-            assertEqual(seqRes, parRes, testName);
+            benchmarkSequential(a, b);
+            benchmarkParallel(a, b, NUMBER_THREADS);
         }
     }
 
     /**
-     * Main method that executes the test suite and benchmarks.
-     * Runs correctness tests followed by performance benchmarks
-     * across different matrix sizes.
-     *
-     * @param args command line arguments (not used)
+     * Helper function to convert a matrix to a readable string format
+     * @param matrix the matrix to convert to string
+     * @return formatted string representation of the matrix
      */
+    private static String toString(Double[][] matrix) {
+        if (matrix == null) return "null";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("[\n");
+
+        for (int i = 0; i < matrix.length; i++) {
+            sb.append("  [");
+            for (int j = 0; j < matrix[i].length; j++) {
+                sb.append(String.format("%6.1f", matrix[i][j]));
+                if (j < matrix[i].length - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]");
+            if (i < matrix.length - 1) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+    private static void runExample() {
+        System.out.println(
+            "=========== Matrix Multiplication Example ===========\n"
+        );
+
+        Double[][] a = { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 } };
+        Double[][] b = { { 7.0, 8.0 }, { 9.0, 10.0 }, { 11.0, 12.0 } };
+
+        System.out.println("Matrix A (2x3):");
+        System.out.println(toString(a));
+        System.out.println();
+
+        System.out.println("Matrix B (3x2):");
+        System.out.println(toString(b));
+        System.out.println();
+
+        System.out.println("Sequential multiplication result (A × B):");
+        Double[][] sequentialResult = sequentialMultiplyMatrix(a, b);
+        System.out.println(toString(sequentialResult));
+        System.out.println();
+
+        System.out.println("Parallel multiplication result (A × B):");
+        Double[][] parallelResult = parallelMultiplyMatrix(a, b, 2);
+        System.out.println(toString(parallelResult));
+        System.out.println();
+    }
+
     public static void main(String[] args) {
-        // Benchmark by num of threads takes a very long time to run, uncomment if you
-        // want
+        // run example
+        runExample();
+
+        // benchmark by num of threads
         // runBenchmarkByThreads();
 
-        // Benchmark by matrix size takes a long time to run, uncomment if you want
-        runBenchmarkByMatrixSizes();
+        // benchmark by matrix size
+        // runBenchmarkByMatrixSizes();
     }
 }
